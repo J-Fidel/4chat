@@ -1,0 +1,76 @@
+;BlitzChat Plus!
+
+Graphics 800,600,32,2
+
+vernum = 2
+AppTitle "BCP V" + vernum, "Are you sure?"
+
+Include "userinfo.bb"
+
+AppTitle "BCP V" + vernum + " | " + uname$, "Are you sure?"
+
+Cls
+SendNetMsg 2,"",userID,0,0
+Locate 0,0
+Print "Now chatting... be nice!"
+Print
+
+While Not KeyHit(1)
+
+    If RecvNetMsg() Then
+
+        msgType = NetMsgType()
+
+        If msgType = 1 Then
+
+            msgFrom=NetMsgFrom()
+            msgData$=NetMsgData$()
+			msgtxt$=Left$(msgData$,Len(msgData$)-11)
+			recColor$=Right$(msgData$,11)
+			
+			Select recColor$
+			Case "255,000,000"
+			Color 255,000,000
+			Case "000,255,000"
+			Color 000,255,000
+			Case "000,255,255"
+			Color 000,255,255
+			Case "255,000,255"
+			Color 255,000,255
+			End Select
+			
+			PlaySound recievesound
+			
+            Print NetPlayerName$(NetMsgFrom()) + ": " + msgtxt$
+
+        ElseIf msgType = 2 Then
+
+			msgFrom=NetMsgFrom()
+			sender$=NetPlayerName$(NetMsgFrom())
+			Color 255,255,255
+			PlaySound usrjoinsound
+			Print sender$ + " has joined."
+			
+		EndIf
+			
+    EndIf
+
+	If KeyHit(59)
+	
+		Select col$
+		Case "255,000,000"
+		Color 255,000,000
+		Case "000,255,000"
+		Color 000,255,000
+		Case "000,255,255"
+		Color 000,255,255
+		Case "255,000,255"
+		Color 255,000,255
+		End Select
+		
+    	msg$ = Input$(uname$ + ": ") + col$
+		PlaySound sendsound 
+    	SendNetMsg 1,msg$,userID,0,0
+	EndIf
+
+Wend
